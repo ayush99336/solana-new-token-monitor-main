@@ -48,7 +48,7 @@ export class YieldFarmingBot {
     }
 
     this.isRunning = true;
-    console.log(chalk.green('\n🚀 Starting Yield Farming Bot...'));
+    console.log(chalk.green('\n Starting Yield Farming Bot...'));
 
     // Initial portfolio log
     this.portfolioManager.logPortfolioStatus();
@@ -62,7 +62,7 @@ export class YieldFarmingBot {
     // Start performance logging loop
     this.startPerformanceLoggingLoop();
 
-    console.log(chalk.green('✅ Bot started successfully'));
+    console.log(chalk.green(' Bot started successfully'));
   }
 
   /**
@@ -153,7 +153,7 @@ export class YieldFarmingBot {
     
     this.lastPoolScan = now;
 
-    console.log(chalk.blue('\n🔍 Scanning for new pools...'));
+    console.log(chalk.blue('\n Scanning for new pools...'));
 
     try {
       let allPools: PoolInfo[] = [];
@@ -165,22 +165,22 @@ export class YieldFarmingBot {
         this.apiFailureCount = 0; // Reset failure count when using demo
       } else {
         // Try to fetch from real APIs with the new methods
-        console.log(chalk.white('📡 Fetching from Raydium API V3...'));
+        console.log(chalk.white(' Fetching from Raydium API V3...'));
         const raydiumPools = await this.poolDataService.fetchRaydiumPools();
         allPools.push(...raydiumPools);
-        console.log(chalk.green(`✅ Raydium: ${raydiumPools.length} pools`));
+        console.log(chalk.green(` Raydium: ${raydiumPools.length} pools`));
 
         // Get pools from Jupiter (secondary source)
-        console.log(chalk.white('📡 Fetching from Jupiter...'));
+        console.log(chalk.white(' Fetching from Jupiter...'));
         const jupiterPools = await this.poolDataService.fetchJupiterData();
         allPools.push(...jupiterPools);
-        console.log(chalk.green(`✅ Jupiter: ${jupiterPools.length} pools`));
+        console.log(chalk.green(` Jupiter: ${jupiterPools.length} pools`));
 
         // Get pools from Birdeye (tertiary source)
-        console.log(chalk.white('📡 Fetching from Birdeye...'));
+        console.log(chalk.white(' Fetching from Birdeye...'));
         const birdeyePools = await this.poolDataService.fetchBirdeyePools();
         allPools.push(...birdeyePools);
-        console.log(chalk.green(`✅ Birdeye: ${birdeyePools.length} pools`));
+        console.log(chalk.green(` Birdeye: ${birdeyePools.length} pools`));
 
         // Get token prices for all pools
         const tokenAddresses = [
@@ -190,7 +190,7 @@ export class YieldFarmingBot {
         const uniqueAddresses = [...new Set(tokenAddresses)];
 
         if (uniqueAddresses.length > 0) {
-          console.log(chalk.white('💰 Fetching token prices from CoinGecko...'));
+          console.log(chalk.white(' Fetching token prices from CoinGecko...'));
           const prices = await this.poolDataService.fetchCoinGeckoPrices(uniqueAddresses);
 
           // Update pool prices if available
@@ -203,12 +203,12 @@ export class YieldFarmingBot {
             }
           });
 
-          console.log(chalk.green(`✅ Updated prices for ${prices.size} tokens`));
+          console.log(chalk.green(` Updated prices for ${prices.size} tokens`));
         }
 
         // If no pools from APIs, fall back to demo
         if (allPools.length === 0) {
-          console.log(chalk.yellow('🔄 Falling back to demo data due to API issues...'));
+          console.log(chalk.yellow(' Falling back to demo data due to API issues...'));
           allPools = getRandomDemoPools(3);
         }
       }
@@ -233,7 +233,7 @@ export class YieldFarmingBot {
       
       // Fall back to demo data on error
       if (this.apiFailureCount > 2) {
-        console.log(chalk.yellow('🔄 Too many API failures, switching to demo mode...'));
+        console.log(chalk.yellow(' Too many API failures, switching to demo mode...'));
         const demoPools = getRandomDemoPools(2);
         for (const pool of demoPools) {
           await this.evaluateAndEnterPool(pool);
@@ -286,7 +286,7 @@ export class YieldFarmingBot {
         }
       }
     } else {
-      console.log(chalk.gray(`⏭️  Skipped ${pool.baseToken.symbol}/${pool.quoteToken.symbol} (Score: ${evaluation.score}/100)`));
+      console.log(chalk.gray(`  Skipped ${pool.baseToken.symbol}/${pool.quoteToken.symbol} (Score: ${evaluation.score}/100)`));
     }
   }
 
@@ -300,7 +300,7 @@ export class YieldFarmingBot {
       return;
     }
 
-    console.log(chalk.blue(`\n👁️  Monitoring ${activePositions.length} active positions...`));
+    console.log(chalk.blue(`\n  Monitoring ${activePositions.length} active positions...`));
 
     for (const position of activePositions) {
       try {
@@ -331,7 +331,7 @@ export class YieldFarmingBot {
         }
         
         if (!currentPool) {
-          console.log(chalk.yellow(`⚠️  Could not get data for pool ${position.poolId}`));
+          console.log(chalk.yellow(`  Could not get data for pool ${position.poolId}`));
           continue;
         }
 
@@ -398,7 +398,7 @@ export class YieldFarmingBot {
     
     this.lastPerformanceLog = now;
 
-    console.log(chalk.magenta('\n📈 PERFORMANCE UPDATE'));
+    console.log(chalk.magenta('\n PERFORMANCE UPDATE'));
     this.portfolioManager.logPortfolioStatus();
     
     // Save performance data

@@ -3,11 +3,13 @@
     "version": "1.0.0",
     "description": "Automated yield farming simulation bot for Solana liquidity pools",
     "scripts": {
-        "monitor": "npx tsx monitorNewTokens.ts",
+        "monitor": "npx tsx monitor.ts",
         "farm": "npx tsx main.ts",
         "dev": "npx tsx --watch main.ts",
+        "dev-monitor": "npx tsx --watch monitor.ts",
         "build": "tsc",
-        "start": "node main.js"
+        "start": "node main.js",
+        "start-monitor": "node monitor.js"
     },
     "author": "https://github.com/archiesnipes",
     "dependencies": {

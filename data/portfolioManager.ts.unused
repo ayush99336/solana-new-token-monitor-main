@@ -28,13 +28,13 @@ export class PortfolioManager {
   enterPosition(pool: PoolInfo): Position | null {
     // Check if we can enter a new position
     if (!this.canEnterNewPosition()) {
-      console.log(chalk.yellow(`❌ Cannot enter position: max positions reached or insufficient cash`));
+      console.log(chalk.yellow(` Cannot enter position: max positions reached or insufficient cash`));
       return null;
     }
 
     // Check if we already have a position in this pool
     if (this.hasPositionInPool(pool.poolId)) {
-      console.log(chalk.yellow(`❌ Already have position in pool ${pool.poolId}`));
+      console.log(chalk.yellow(` Already have position in pool ${pool.poolId}`));
       return null;
     }
 
@@ -75,7 +75,7 @@ export class PortfolioManager {
       success: true,
     });
 
-    console.log(chalk.green(`✅ Entered position in ${pool.baseToken.symbol}/${pool.quoteToken.symbol}`));
+    console.log(chalk.green(` Entered position in ${pool.baseToken.symbol}/${pool.quoteToken.symbol}`));
     console.log(chalk.white(`   Amount: $${positionSize.toLocaleString()}`));
     console.log(chalk.white(`   Entry APY: ${pool.apy.toFixed(2)}%`));
     console.log(chalk.white(`   Available cash: $${this.portfolio.availableCash.toLocaleString()}`));
@@ -90,7 +90,7 @@ export class PortfolioManager {
     const positionIndex = this.portfolio.activePositions.findIndex(p => p.id === positionId);
     
     if (positionIndex === -1) {
-      console.log(chalk.red(`❌ Position ${positionId} not found`));
+      console.log(chalk.red(` Position ${positionId} not found`));
       return false;
     }
 
@@ -296,7 +296,7 @@ export class PortfolioManager {
     console.log(chalk.white(`Active Positions: ${summary.activePositions.length}/${summary.maxPositions}`));
     
     if (stats.totalTrades > 0) {
-      console.log(chalk.blue('\n📊 PERFORMANCE STATS'));
+      console.log(chalk.blue('\n PERFORMANCE STATS'));
       console.log(chalk.white(`Total Trades: ${stats.totalTrades}`));
       console.log(chalk.white(`Win Rate: ${stats.winRate.toFixed(1)}%`));
       console.log(chalk.white(`Avg Win: $${stats.avgWin.toFixed(2)}`));
