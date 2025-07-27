@@ -1,0 +1,59 @@
+{
+  "totalValue": 8744.95877390177,
+  "totalInvested": 0,
+  "totalPnl": -1255.0412260982293,
+  "totalPnlPercentage": -12.550412260982293,
+  "activePositions": [],
+  "closedPositions": [
+    {
+      "id": "1e3a634b-e48d-4bee-b60a-56026136f216",
+      "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+      "entryTime": "2025-07-27T09:23:51.603Z",
+      "entryPrice": 42.30441331234756,
+      "entryApy": 25.613506707684174,
+      "amount": 500,
+      "currentValue": 45.62972891626703,
+      "currentApy": 34.011931447777386,
+      "pnl": -454.370271083733,
+      "pnlPercentage": -90.87405421674659,
+      "status": "exited",
+      "exitTime": "2025-07-27T09:24:17.841Z",
+      "exitPrice": 3.8606688075361895,
+      "exitReason": "Stop loss triggered: -45.44% loss"
+    },
+    {
+      "id": "82a8fe12-538a-4b7e-a848-fa07fe717906",
+      "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+      "entryTime": "2025-07-27T09:23:51.705Z",
+      "entryPrice": 25.09497314034128,
+      "entryApy": 16.961066335570198,
+      "amount": 500,
+      "currentValue": 156.50302870588945,
+      "currentApy": 21.93190051398551,
+      "pnl": -343.49697129411055,
+      "pnlPercentage": -68.69939425882211,
+      "status": "exited",
+      "exitTime": "2025-07-27T09:24:17.842Z",
+      "exitPrice": 7.854875075834045,
+      "exitReason": "Stop loss triggered: -34.35% loss"
+    },
+    {
+      "id": "4dec65c1-3cc0-461f-b40a-36240512dea7",
+      "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+      "entryTime": "2025-07-27T09:23:51.806Z",
+      "entryPrice": 21.340087794512375,
+      "entryApy": 54.527775127672136,
+      "amount": 500,
+      "currentValue": 42.826016279614066,
+      "currentApy": 23.34745413975446,
+      "pnl": -457.17398372038593,
+      "pnlPercentage": -91.43479674407719,
+      "status": "exited",
+      "exitTime": "2025-07-27T09:24:17.842Z",
+      "exitPrice": 1.8278122877285188,
+      "exitReason": "Stop loss triggered: -45.72% loss"
+    }
+  ],
+  "availableCash": 8744.95877390177,
+  "maxPositions": 3
+}

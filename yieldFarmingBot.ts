@@ -1,0 +1,524 @@
+import { PoolInfo, PoolPerformanceMetrics, Position, BotConfig, BotAction } from './types';
+import { PoolDataService } from './poolDataService';
+import { PoolEvaluator } from './poolEvaluator';
+import { PortfolioManager } from './portfolioManager';
+import { solanaConnection } from './constants';
+import { DEFAULT_BOT_CONFIG, MONITORING } from './config';
+import { storeData } from './utils';
+import { getRandomDemoPools, simulatePoolChanges } from './demoData';
+import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
+
+export class YieldFarmingBot {
+  private poolDataService: PoolDataService;
+  private poolEvaluator: PoolEvaluator;
+  private portfolioManager: PortfolioManager;
+  private config: BotConfig;
+  private isRunning: boolean = false;
+  private actions: BotAction[] = [];
+  private poolCache: Map<string, PoolInfo> = new Map();
+  private lastPoolScan: number = 0;
+  private lastPerformanceLog: number = 0;
+  private demoMode: boolean = false;
+  private apiFailureCount: number = 0;
+
+  constructor(config: BotConfig = DEFAULT_BOT_CONFIG, enableDemoMode: boolean = false) {
+    this.config = config;
+    this.demoMode = enableDemoMode;
+    this.poolDataService = new PoolDataService(solanaConnection);
+    this.poolEvaluator = new PoolEvaluator(config, this.logAction.bind(this));
+    this.portfolioManager = new PortfolioManager(config, this.logAction.bind(this), config.maxTotalInvestment);
+
+    console.log(chalk.blue('🤖 Yield Farming Bot Initialized'));
+    if (this.demoMode) {
+      console.log(chalk.yellow('📍 Demo Mode: Using simulated pool data'));
+    }
+    console.log(chalk.white(`Config: Min APY ${config.minApy}%, Min TVL $${config.minTvl.toLocaleString()}`));
+    console.log(chalk.white(`Position Size: $${config.positionSize.toLocaleString()}, Max Positions: ${config.maxPositions}`));
+  }
+
+  /**
+   * Start the yield farming bot
+   */
+  async start(): Promise<void> {
+    if (this.isRunning) {
+      console.log(chalk.yellow('Bot is already running'));
+      return;
+    }
+
+    this.isRunning = true;
+    console.log(chalk.green('\n🚀 Starting Yield Farming Bot...'));
+
+    // Initial portfolio log
+    this.portfolioManager.logPortfolioStatus();
+
+    // Start main monitoring loop
+    this.startMonitoringLoop();
+    
+    // Start position monitoring loop
+    this.startPositionMonitoringLoop();
+
+    // Start performance logging loop
+    this.startPerformanceLoggingLoop();
+
+    console.log(chalk.green('✅ Bot started successfully'));
+  }
+
+  /**
+   * Stop the yield farming bot
+   */
+  stop(): void {
+    this.isRunning = false;
+    console.log(chalk.red('🛑 Yield Farming Bot stopped'));
+    
+    // Save final state
+    this.saveState();
+    this.portfolioManager.logPortfolioStatus();
+  }
+
+  /**
+   * Main monitoring loop - scans for new pools
+   */
+  private startMonitoringLoop(): void {
+    const monitoringInterval = setInterval(async () => {
+      if (!this.isRunning) {
+        clearInterval(monitoringInterval);
+        return;
+      }
+
+      try {
+        await this.scanForNewPools();
+      } catch (error) {
+        console.error(chalk.red('Error in monitoring loop:'), error);
+        this.logAction({
+          id: `error_${Date.now()}`,
+          timestamp: new Date(),
+          type: 'pool_detected',
+          poolId: 'unknown',
+          details: { error: error.message },
+          success: false,
+          error: error.message,
+        });
+      }
+    }, MONITORING.POOL_SCAN_INTERVAL);
+  }
+
+  /**
+   * Position monitoring loop - updates active positions
+   */
+  private startPositionMonitoringLoop(): void {
+    const positionInterval = setInterval(async () => {
+      if (!this.isRunning) {
+        clearInterval(positionInterval);
+        return;
+      }
+
+      try {
+        await this.monitorActivePositions();
+      } catch (error) {
+        console.error(chalk.red('Error in position monitoring:'), error);
+      }
+    }, MONITORING.POSITION_UPDATE_INTERVAL);
+  }
+
+  /**
+   * Performance logging loop
+   */
+  private startPerformanceLoggingLoop(): void {
+    const performanceInterval = setInterval(() => {
+      if (!this.isRunning) {
+        clearInterval(performanceInterval);
+        return;
+      }
+
+      try {
+        this.logPerformance();
+      } catch (error) {
+        console.error(chalk.red('Error in performance logging:'), error);
+      }
+    }, MONITORING.PERFORMANCE_LOG_INTERVAL);
+  }
+
+  /**
+   * Scan for new pools and evaluate them
+   */
+  private async scanForNewPools(): Promise<void> {
+    const now = Date.now();
+    
+    // Rate limiting
+    if (now - this.lastPoolScan < MONITORING.POOL_SCAN_INTERVAL) {
+      return;
+    }
+    
+    this.lastPoolScan = now;
+
+    console.log(chalk.blue('\n🔍 Scanning for new pools...'));
+
+    try {
+      let allPools: PoolInfo[] = [];
+
+      if (this.demoMode || this.apiFailureCount > 3) {
+        // Use demo data if in demo mode or APIs are consistently failing
+        console.log(chalk.yellow('📋 Using demo pool data...'));
+        allPools = getRandomDemoPools(4);
+        this.apiFailureCount = 0; // Reset failure count when using demo
+      } else {
+        // Try to fetch from real APIs with the new methods
+        console.log(chalk.white('📡 Fetching from Raydium API V3...'));
+        const raydiumPools = await this.poolDataService.fetchRaydiumPools();
+        allPools.push(...raydiumPools);
+        console.log(chalk.green(`✅ Raydium: ${raydiumPools.length} pools`));
+
+        // Get pools from Jupiter (secondary source)
+        console.log(chalk.white('📡 Fetching from Jupiter...'));
+        const jupiterPools = await this.poolDataService.fetchJupiterData();
+        allPools.push(...jupiterPools);
+        console.log(chalk.green(`✅ Jupiter: ${jupiterPools.length} pools`));
+
+        // Get pools from Birdeye (tertiary source)
+        console.log(chalk.white('📡 Fetching from Birdeye...'));
+        const birdeyePools = await this.poolDataService.fetchBirdeyePools();
+        allPools.push(...birdeyePools);
+        console.log(chalk.green(`✅ Birdeye: ${birdeyePools.length} pools`));
+
+        // Get token prices for all pools
+        const tokenAddresses = [
+          ...allPools.map(p => p.baseToken.mint),
+          ...allPools.map(p => p.quoteToken.mint),
+        ];
+        const uniqueAddresses = [...new Set(tokenAddresses)];
+
+        if (uniqueAddresses.length > 0) {
+          console.log(chalk.white('💰 Fetching token prices from CoinGecko...'));
+          const prices = await this.poolDataService.fetchCoinGeckoPrices(uniqueAddresses);
+
+          // Update pool prices if available
+          allPools.forEach(pool => {
+            const basePrice = prices.get(pool.baseToken.mint);
+            const quotePrice = prices.get(pool.quoteToken.mint);
+
+            if (basePrice && quotePrice && quotePrice > 0) {
+              pool.price = basePrice / quotePrice;
+            }
+          });
+
+          console.log(chalk.green(`✅ Updated prices for ${prices.size} tokens`));
+        }
+
+        // If no pools from APIs, fall back to demo
+        if (allPools.length === 0) {
+          console.log(chalk.yellow('🔄 Falling back to demo data due to API issues...'));
+          allPools = getRandomDemoPools(3);
+        }
+      }
+
+      // Remove duplicates and filter valid pools
+      const uniquePools = this.deduplicatePools(allPools);
+      const validPools = uniquePools.filter(pool => this.poolDataService.validatePoolData(pool));
+
+      console.log(chalk.white(`Found ${validPools.length} valid pools`));
+
+      // Evaluate each pool
+      for (const pool of validPools) {
+        await this.evaluateAndEnterPool(pool);
+        
+        // Small delay to avoid overwhelming APIs
+        await this.sleep(100);
+      }
+
+    } catch (error) {
+      console.error(chalk.red('Error scanning pools:'), error);
+      this.apiFailureCount++;
+      
+      // Fall back to demo data on error
+      if (this.apiFailureCount > 2) {
+        console.log(chalk.yellow('🔄 Too many API failures, switching to demo mode...'));
+        const demoPools = getRandomDemoPools(2);
+        for (const pool of demoPools) {
+          await this.evaluateAndEnterPool(pool);
+        }
+      }
+    }
+  }
+
+  /**
+   * Evaluate a pool and potentially enter a position
+   */
+  private async evaluateAndEnterPool(pool: PoolInfo): Promise<void> {
+    // Skip if we already evaluated this pool recently
+    if (this.poolCache.has(pool.poolId)) {
+      return;
+    }
+
+    // Cache the pool
+    this.poolCache.set(pool.poolId, pool);
+
+    // Log pool detection
+    this.logAction({
+      id: `detect_${pool.poolId}_${Date.now()}`,
+      timestamp: new Date(),
+      type: 'pool_detected',
+      poolId: pool.poolId,
+      details: {
+        symbols: `${pool.baseToken.symbol}/${pool.quoteToken.symbol}`,
+        apy: pool.apy,
+        tvl: pool.tvl,
+        volume24h: pool.volume24h,
+      },
+      success: true,
+    });
+
+    // Evaluate pool
+    const evaluation = this.poolEvaluator.evaluatePoolForEntry(pool);
+
+    if (evaluation.shouldEnter) {
+      // Try to enter position
+      const position = this.portfolioManager.enterPosition(pool);
+      
+      if (position) {
+        console.log(chalk.green(`🎯 Successfully entered position in ${pool.baseToken.symbol}/${pool.quoteToken.symbol}`));
+        console.log(chalk.white(`   Score: ${evaluation.score}/100`));
+        evaluation.reasons.forEach(reason => console.log(chalk.gray(`   ${reason}`)));
+        
+        if (evaluation.warnings.length > 0) {
+          evaluation.warnings.forEach(warning => console.log(chalk.yellow(`   ${warning}`)));
+        }
+      }
+    } else {
+      console.log(chalk.gray(`⏭️  Skipped ${pool.baseToken.symbol}/${pool.quoteToken.symbol} (Score: ${evaluation.score}/100)`));
+    }
+  }
+
+  /**
+   * Monitor active positions and check for exit conditions
+   */
+  private async monitorActivePositions(): Promise<void> {
+    const activePositions = this.portfolioManager.getActivePositions();
+    
+    if (activePositions.length === 0) {
+      return;
+    }
+
+    console.log(chalk.blue(`\n👁️  Monitoring ${activePositions.length} active positions...`));
+
+    for (const position of activePositions) {
+      try {
+        let currentPool: PoolPerformanceMetrics | null = null;
+
+        if (this.demoMode || this.apiFailureCount > 2) {
+          // Simulate pool changes in demo mode
+          const cachedPool = this.poolCache.get(position.poolId);
+          if (cachedPool) {
+            const simulatedPool = simulatePoolChanges(cachedPool);
+            this.poolCache.set(position.poolId, simulatedPool);
+            
+            currentPool = {
+              poolId: position.poolId,
+              timestamp: new Date(),
+              apy: simulatedPool.apy,
+              tvl: simulatedPool.tvl,
+              volume24h: simulatedPool.volume24h,
+              price: simulatedPool.price,
+              fees24h: simulatedPool.fees24h,
+              priceChange24h: 0,
+              apyChange24h: 0,
+            };
+          }
+        } else {
+          // Get current pool data from APIs
+          currentPool = await this.poolDataService.getPoolMetrics(position.poolId);
+        }
+        
+        if (!currentPool) {
+          console.log(chalk.yellow(`⚠️  Could not get data for pool ${position.poolId}`));
+          continue;
+        }
+
+        // Convert metrics to PoolInfo format (simplified)
+        const poolInfo: PoolInfo = {
+          poolId: position.poolId,
+          baseToken: { mint: '', symbol: 'BASE', decimals: 9, amount: 0 },
+          quoteToken: { mint: '', symbol: 'QUOTE', decimals: 9, amount: 0 },
+          tvl: currentPool.tvl,
+          volume24h: currentPool.volume24h,
+          fees24h: currentPool.fees24h,
+          apy: currentPool.apy,
+          createdAt: new Date(),
+          lpTokenSupply: 0,
+          price: currentPool.price,
+        };
+
+        // Update position value
+        this.portfolioManager.updatePosition(position, poolInfo);
+
+        // Log position monitoring
+        this.logAction({
+          id: `monitor_${position.id}_${Date.now()}`,
+          timestamp: new Date(),
+          type: 'position_monitored',
+          poolId: position.poolId,
+          details: {
+            positionId: position.id,
+            currentValue: position.currentValue,
+            pnl: position.pnl,
+            pnlPercentage: position.pnlPercentage,
+            currentApy: currentPool.apy,
+          },
+          success: true,
+        });
+
+        // Check exit conditions
+        const exitEvaluation = this.poolEvaluator.evaluatePositionForExit(position, poolInfo);
+        
+        if (exitEvaluation.shouldExit) {
+          const success = this.portfolioManager.exitPosition(position.id, poolInfo, exitEvaluation.reason);
+          
+          if (success) {
+            console.log(chalk.cyan(`📤 Position exit - ${exitEvaluation.reason}`));
+            console.log(chalk.white(`   Urgency: ${exitEvaluation.urgency}`));
+          }
+        }
+
+      } catch (error) {
+        console.error(chalk.red(`Error monitoring position ${position.id}:`), error);
+      }
+    }
+  }
+
+  /**
+   * Log performance metrics
+   */
+  private logPerformance(): void {
+    const now = Date.now();
+    
+    if (now - this.lastPerformanceLog < MONITORING.PERFORMANCE_LOG_INTERVAL) {
+      return;
+    }
+    
+    this.lastPerformanceLog = now;
+
+    console.log(chalk.magenta('\n📈 PERFORMANCE UPDATE'));
+    this.portfolioManager.logPortfolioStatus();
+    
+    // Save performance data
+    const summary = this.portfolioManager.getPortfolioSummary();
+    const stats = this.portfolioManager.getPerformanceStats();
+    
+    this.savePerformanceData({
+      timestamp: new Date(),
+      portfolio: summary,
+      stats,
+    });
+  }
+
+  /**
+   * Log bot actions
+   */
+  private logAction(action: BotAction): void {
+    this.actions.push(action);
+    
+    // Keep only last 1000 actions to manage memory
+    if (this.actions.length > 1000) {
+      this.actions = this.actions.slice(-1000);
+    }
+  }
+
+  /**
+   * Remove duplicate pools based on pool ID
+   */
+  private deduplicatePools(pools: PoolInfo[]): PoolInfo[] {
+    const uniquePoolsMap = new Map<string, PoolInfo>();
+    
+    pools.forEach(pool => {
+      if (!uniquePoolsMap.has(pool.poolId) || 
+          uniquePoolsMap.get(pool.poolId)!.createdAt < pool.createdAt) {
+        uniquePoolsMap.set(pool.poolId, pool);
+      }
+    });
+    
+    return Array.from(uniquePoolsMap.values());
+  }
+
+  /**
+   * Save bot state to files
+   */
+  private saveState(): void {
+    try {
+      const dataDir = path.join(__dirname, 'data');
+      
+      // Ensure data directory exists
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+
+      // Save actions
+      const actionsPath = path.join(dataDir, 'bot_actions.json');
+      fs.writeFileSync(actionsPath, JSON.stringify(this.actions, null, 2));
+
+      // Save portfolio
+      const portfolioPath = path.join(dataDir, 'portfolio_state.json');
+      const portfolio = this.portfolioManager.getPortfolioSummary();
+      fs.writeFileSync(portfolioPath, JSON.stringify(portfolio, null, 2));
+
+      console.log(chalk.white('💾 State saved successfully'));
+    } catch (error) {
+      console.error(chalk.red('Error saving state:'), error);
+    }
+  }
+
+  /**
+   * Save performance data
+   */
+  private savePerformanceData(data: any): void {
+    try {
+      const dataDir = path.join(__dirname, 'data');
+      const performancePath = path.join(dataDir, 'performance_log.json');
+      
+      let performanceLog = [];
+      if (fs.existsSync(performancePath)) {
+        const existingData = fs.readFileSync(performancePath, 'utf8');
+        performanceLog = JSON.parse(existingData);
+      }
+      
+      performanceLog.push(data);
+      
+      // Keep only last 100 entries
+      if (performanceLog.length > 100) {
+        performanceLog = performanceLog.slice(-100);
+      }
+      
+      fs.writeFileSync(performancePath, JSON.stringify(performanceLog, null, 2));
+    } catch (error) {
+      console.error(chalk.red('Error saving performance data:'), error);
+    }
+  }
+
+  /**
+   * Utility function to add delays
+   */
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get bot statistics
+   */
+  getBotStats(): {
+    uptime: number;
+    totalActions: number;
+    poolsEvaluated: number;
+    positionsEntered: number;
+    positionsExited: number;
+    currentPositions: number;
+  } {
+    return {
+      uptime: this.isRunning ? Date.now() - this.lastPoolScan : 0,
+      totalActions: this.actions.length,
+      poolsEvaluated: this.actions.filter(a => a.type === 'pool_evaluated').length,
+      positionsEntered: this.actions.filter(a => a.type === 'position_entered').length,
+      positionsExited: this.actions.filter(a => a.type === 'position_exited').length,
+      currentPositions: this.portfolioManager.getActivePositions().length,
+    };
+  }
+}

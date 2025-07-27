@@ -1,0 +1,261 @@
+[
+  {
+    "id": "detect_jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263_1753608231603",
+    "timestamp": "2025-07-27T09:23:51.603Z",
+    "type": "pool_detected",
+    "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "details": {
+      "symbols": "BONK/SOL",
+      "apy": 25.613506707684174,
+      "tvl": 37659.97690841254,
+      "volume24h": 10559.431539735693
+    },
+    "success": true
+  },
+  {
+    "id": "eval_jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263_1753608231603",
+    "timestamp": "2025-07-27T09:23:51.603Z",
+    "type": "pool_evaluated",
+    "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "details": {
+      "apy": 25.613506707684174,
+      "tvl": 37659.97690841254,
+      "volume24h": 10559.431539735693,
+      "age": 2.0004802777777777
+    },
+    "success": true
+  },
+  {
+    "id": "enter_1e3a634b-e48d-4bee-b60a-56026136f216",
+    "timestamp": "2025-07-27T09:23:51.604Z",
+    "type": "position_entered",
+    "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "details": {
+      "positionId": "1e3a634b-e48d-4bee-b60a-56026136f216",
+      "amount": 500,
+      "entryPrice": 42.30441331234756,
+      "entryApy": 25.613506707684174,
+      "poolSymbols": "BONK/SOL"
+    },
+    "success": true
+  },
+  {
+    "id": "detect_jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm_1753608231704",
+    "timestamp": "2025-07-27T09:23:51.704Z",
+    "type": "pool_detected",
+    "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "details": {
+      "symbols": "WIF/SOL",
+      "apy": 16.961066335570198,
+      "tvl": 54679.049352420116,
+      "volume24h": 10152.326034289155
+    },
+    "success": true
+  },
+  {
+    "id": "eval_jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm_1753608231704",
+    "timestamp": "2025-07-27T09:23:51.704Z",
+    "type": "pool_evaluated",
+    "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "details": {
+      "apy": 16.961066335570198,
+      "tvl": 54679.049352420116,
+      "volume24h": 10152.326034289155,
+      "age": 9.049097222222223
+    },
+    "success": true
+  },
+  {
+    "id": "enter_82a8fe12-538a-4b7e-a848-fa07fe717906",
+    "timestamp": "2025-07-27T09:23:51.705Z",
+    "type": "position_entered",
+    "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "details": {
+      "positionId": "82a8fe12-538a-4b7e-a848-fa07fe717906",
+      "amount": 500,
+      "entryPrice": 25.09497314034128,
+      "entryApy": 16.961066335570198,
+      "poolSymbols": "WIF/SOL"
+    },
+    "success": true
+  },
+  {
+    "id": "detect_jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr_1753608231805",
+    "timestamp": "2025-07-27T09:23:51.805Z",
+    "type": "pool_detected",
+    "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "details": {
+      "symbols": "POPCAT/SOL",
+      "apy": 54.527775127672136,
+      "tvl": 30042.629682982548,
+      "volume24h": 17932.761418692946
+    },
+    "success": true
+  },
+  {
+    "id": "eval_jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr_1753608231805",
+    "timestamp": "2025-07-27T09:23:51.805Z",
+    "type": "pool_evaluated",
+    "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "details": {
+      "apy": 54.527775127672136,
+      "tvl": 30042.629682982548,
+      "volume24h": 17932.761418692946,
+      "age": 3.257340277777778
+    },
+    "success": true
+  },
+  {
+    "id": "enter_4dec65c1-3cc0-461f-b40a-36240512dea7",
+    "timestamp": "2025-07-27T09:23:51.806Z",
+    "type": "position_entered",
+    "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "details": {
+      "positionId": "4dec65c1-3cc0-461f-b40a-36240512dea7",
+      "amount": 500,
+      "entryPrice": 21.340087794512375,
+      "entryApy": 54.527775127672136,
+      "poolSymbols": "POPCAT/SOL"
+    },
+    "success": true
+  },
+  {
+    "id": "detect_jupiter_MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5_1753608231906",
+    "timestamp": "2025-07-27T09:23:51.906Z",
+    "type": "pool_detected",
+    "poolId": "jupiter_MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
+    "details": {
+      "symbols": "MEW/SOL",
+      "apy": 128.6565984193664,
+      "tvl": 16928.236582200865,
+      "volume24h": 23841.590978699995
+    },
+    "success": true
+  },
+  {
+    "id": "eval_jupiter_MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5_1753608231906",
+    "timestamp": "2025-07-27T09:23:51.906Z",
+    "type": "pool_evaluated",
+    "poolId": "jupiter_MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
+    "details": {
+      "apy": 128.6565984193664,
+      "tvl": 16928.236582200865,
+      "volume24h": 23841.590978699995,
+      "age": 9.711354166666666
+    },
+    "success": true
+  },
+  {
+    "id": "detect_jupiter_3S8qX1MsMqRbiwKg2cQyx7nis1oHMgaCuc9c4VfvVdPN_1753608232007",
+    "timestamp": "2025-07-27T09:23:52.007Z",
+    "type": "pool_detected",
+    "poolId": "jupiter_3S8qX1MsMqRbiwKg2cQyx7nis1oHMgaCuc9c4VfvVdPN",
+    "details": {
+      "symbols": "MOTHER/SOL",
+      "apy": 29.548782622332883,
+      "tvl": 55162.56559177455,
+      "volume24h": 17843.3131862236
+    },
+    "success": true
+  },
+  {
+    "id": "eval_jupiter_3S8qX1MsMqRbiwKg2cQyx7nis1oHMgaCuc9c4VfvVdPN_1753608232007",
+    "timestamp": "2025-07-27T09:23:52.007Z",
+    "type": "pool_evaluated",
+    "poolId": "jupiter_3S8qX1MsMqRbiwKg2cQyx7nis1oHMgaCuc9c4VfvVdPN",
+    "details": {
+      "apy": 29.548782622332883,
+      "tvl": 55162.56559177455,
+      "volume24h": 17843.3131862236,
+      "age": 2.8680891666666666
+    },
+    "success": true
+  },
+  {
+    "id": "monitor_1e3a634b-e48d-4bee-b60a-56026136f216_1753608257841",
+    "timestamp": "2025-07-27T09:24:17.841Z",
+    "type": "position_monitored",
+    "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "details": {
+      "positionId": "1e3a634b-e48d-4bee-b60a-56026136f216",
+      "currentValue": 272.8149177343249,
+      "pnl": -227.18508226567508,
+      "pnlPercentage": -45.437016453135016,
+      "currentApy": 34.011931447777386
+    },
+    "success": true
+  },
+  {
+    "id": "exit_1e3a634b-e48d-4bee-b60a-56026136f216",
+    "timestamp": "2025-07-27T09:24:17.841Z",
+    "type": "position_exited",
+    "poolId": "jupiter_DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "details": {
+      "positionId": "1e3a634b-e48d-4bee-b60a-56026136f216",
+      "exitReason": "Stop loss triggered: -45.44% loss",
+      "pnl": -454.370271083733,
+      "pnlPercentage": -90.87405421674659,
+      "holdingTime": 0.007288333333333333,
+      "finalValue": 45.62972891626703
+    },
+    "success": true
+  },
+  {
+    "id": "monitor_82a8fe12-538a-4b7e-a848-fa07fe717906_1753608257842",
+    "timestamp": "2025-07-27T09:24:17.842Z",
+    "type": "position_monitored",
+    "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "details": {
+      "positionId": "82a8fe12-538a-4b7e-a848-fa07fe717906",
+      "currentValue": 328.2515494962247,
+      "pnl": -171.7484505037753,
+      "pnlPercentage": -34.34969010075506,
+      "currentApy": 21.93190051398551
+    },
+    "success": true
+  },
+  {
+    "id": "exit_82a8fe12-538a-4b7e-a848-fa07fe717906",
+    "timestamp": "2025-07-27T09:24:17.842Z",
+    "type": "position_exited",
+    "poolId": "jupiter_EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "details": {
+      "positionId": "82a8fe12-538a-4b7e-a848-fa07fe717906",
+      "exitReason": "Stop loss triggered: -34.35% loss",
+      "pnl": -343.49697129411055,
+      "pnlPercentage": -68.69939425882211,
+      "holdingTime": 0.007260277777777778,
+      "finalValue": 156.50302870588945
+    },
+    "success": true
+  },
+  {
+    "id": "monitor_4dec65c1-3cc0-461f-b40a-36240512dea7_1753608257842",
+    "timestamp": "2025-07-27T09:24:17.842Z",
+    "type": "position_monitored",
+    "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "details": {
+      "positionId": "4dec65c1-3cc0-461f-b40a-36240512dea7",
+      "currentValue": 271.4131206846092,
+      "pnl": -228.58687931539077,
+      "pnlPercentage": -45.71737586307815,
+      "currentApy": 23.34745413975446
+    },
+    "success": true
+  },
+  {
+    "id": "exit_4dec65c1-3cc0-461f-b40a-36240512dea7",
+    "timestamp": "2025-07-27T09:24:17.842Z",
+    "type": "position_exited",
+    "poolId": "jupiter_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "details": {
+      "positionId": "4dec65c1-3cc0-461f-b40a-36240512dea7",
+      "exitReason": "Stop loss triggered: -45.72% loss",
+      "pnl": -457.17398372038593,
+      "pnlPercentage": -91.43479674407719,
+      "holdingTime": 0.007232222222222222,
+      "finalValue": 42.826016279614066
+    },
+    "success": true
+  }
+]
